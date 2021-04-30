@@ -26,6 +26,8 @@ export default class Plane extends Entity {
 
     const loader = new THREE.TextureLoader();
     loader.load(fruits, (texture) => {
+      texture.minFilter = THREE.NearestFilter;
+      texture.magFilter = THREE.NearestFilter;
       this.mat.uniforms.channel0.value = texture;
     });
   }
