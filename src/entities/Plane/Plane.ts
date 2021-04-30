@@ -2,6 +2,7 @@ import * as THREE from 'three';
 import Entity from '../../cores/Entity';
 import fragmentShader from './Plane.frag';
 import vertexShader from './Plane.vert';
+import fruits from '../../images/fruits.png';
 
 export default class Plane extends Entity {
   geo: THREE.PlaneBufferGeometry;
@@ -13,6 +14,7 @@ export default class Plane extends Entity {
     this.mat = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },
+        channel0: { value: new THREE.Texture },
       },
       fragmentShader,
       vertexShader,
@@ -21,6 +23,11 @@ export default class Plane extends Entity {
 
     this.mesh = new THREE.Mesh(this.geo, this.mat);
     this.app.scene.add(this.mesh);
+
+    const loader = new THREE.TextureLoader();
+    loader.load(fruits, (texture) => {
+      this.mat.uniforms.channel0.value = texture;
+    });
   }
 
   update() {
