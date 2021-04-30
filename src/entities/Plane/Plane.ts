@@ -10,7 +10,7 @@ export default class Plane extends Entity {
   mesh: THREE.Mesh;
 
   start() {
-    this.geo = new THREE.PlaneBufferGeometry(1, 1, 32, 32);
+    this.geo = new THREE.PlaneBufferGeometry(1.5, 1.5, 32, 32);
     this.mat = new THREE.ShaderMaterial({
       uniforms: {
         time: { value: 0 },

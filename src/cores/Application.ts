@@ -1,11 +1,18 @@
 import * as THREE from "three";
-import Entity from './Entity';
+import Entity from "./Entity";
+import { EffectComposer } from "three/examples/jsm/postprocessing/EffectComposer";
+import { RenderPass } from "three/examples/jsm/postprocessing/RenderPass";
+import { ShaderPass } from "three/examples/jsm/postprocessing/ShaderPass";
+import { FXAAShader } from "three/examples/jsm/shaders/FXAAShader";
 
 export default class Application {
   clock: THREE.Clock;
   scene: THREE.Scene;
   camera: THREE.PerspectiveCamera;
-  renderer: THREE.Renderer;
+  renderer: THREE.WebGLRenderer;
+
+  fxaa: ShaderPass;
+  composer: EffectComposer;
 
   entities: Entity[] = [];
 
@@ -19,8 +26,18 @@ export default class Application {
       1000
     );
 
-    this.renderer = new THREE.WebGLRenderer();
+    this.renderer = new THREE.WebGLRenderer({
+      antialias: true,
+    });
     this.renderer.setSize(window.innerWidth, window.innerHeight);
+
+    this.fxaa = new ShaderPass(FXAAShader);
+    this.fxaa.material.uniforms.resolution.value.x = 1 / window.innerWidth;
+    this.fxaa.material.uniforms.resolution.value.y = 1 / window.innerHeight;
+
+    this.composer = new EffectComposer(this.renderer);
+    this.composer.addPass(new RenderPass(this.scene, this.camera));
+    this.composer.addPass(this.fxaa);
 
     this.camera.position.z = 5;
 
@@ -30,7 +47,7 @@ export default class Application {
   }
 
   addEntity(...entities: Entity[]) {
-    entities.forEach(entity => {
+    entities.forEach((entity) => {
       entity.app = this;
       entity.start();
     });
@@ -50,6 +67,6 @@ export default class Application {
     }
 
     window.requestAnimationFrame(this.render);
-    this.renderer.render(this.scene, this.camera);
+    this.composer.render();
   };
 }
